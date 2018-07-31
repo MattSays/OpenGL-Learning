@@ -76,8 +76,8 @@ public class AppLogger {
      * @param error
      * @param message
      */
-    public void openglError(int error, long message) {
-        this.err("(" + Integer.toHexString(error) + ")" + " " + GLFWErrorCallback.getDescription(message), ErrorType.OPENGL);
+    public void glfwError(int error, long message) {
+        this.err("(" + Integer.toHexString(error) + ")" + " " + GLFWErrorCallback.getDescription(message), ErrorType.GLFW);
     }
 
     /**
@@ -85,8 +85,8 @@ public class AppLogger {
      *
      * @param message
      */
-    public void crashReport(String message) {
-        this.err(message, ErrorType.CRASH);
+    public void crash(String message, ErrorType type) {
+        this.err(message, type);
         Application.exit();
     }
 
@@ -116,7 +116,7 @@ public class AppLogger {
     }
 
     public enum ErrorType {
-        OPENGL, UNKNOWN, CRASH
+        GLFW, UNKNOWN, CRASH, OUT_OF_BOUNDS
     }
 
 }

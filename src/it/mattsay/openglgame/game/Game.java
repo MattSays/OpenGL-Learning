@@ -1,8 +1,22 @@
 package it.mattsay.openglgame.game;
 
 import it.mattsay.openglgame.core.Application;
+import it.mattsay.openglgame.core.rendering.models.RawModel;
 
 public class Game extends Application {
+
+
+    float[] vertices = {
+            // Left bottom triangle
+            -0.5f, 0.5f, 0f,
+            -0.5f, -0.5f, 0f,
+            0.5f, -0.5f, 0f,
+            // Right top triangle
+            0.5f, -0.5f, 0f,
+            0.5f, 0.5f, 0f,
+            -0.5f, 0.5f, 0f
+    };
+    RawModel model;
 
     /**
      * Just setting some window properties
@@ -17,7 +31,8 @@ public class Game extends Application {
      */
     @Override
     protected void init() {
-
+        this.model = new RawModel(this.vertices);
+        this.model.init();
     }
 
     /**
@@ -26,6 +41,11 @@ public class Game extends Application {
     @Override
     protected void render() {
 
+        this.getWindow().setName("Game - " + this.getFPS());
+
+        getRenderer().begin();
+
+        getRenderer().render(this.model);
     }
 
     /**
@@ -33,6 +53,6 @@ public class Game extends Application {
      */
     @Override
     protected void dispose() {
-
+        this.model.destroy();
     }
 }

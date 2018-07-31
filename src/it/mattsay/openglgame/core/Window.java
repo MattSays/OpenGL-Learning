@@ -35,6 +35,10 @@ public class Window {
         return name;
     }
 
+    public void setName(String name) {
+        glfwSetWindowTitle(this.windowId, name);
+    }
+
     public int getWidth() {
         return width;
     }
@@ -54,6 +58,8 @@ public class Window {
 
         glfwMakeContextCurrent(this.windowId);
 
+        glfwSwapInterval(0);
+
         glfwShowWindow(this.windowId);
     }
 
@@ -63,6 +69,10 @@ public class Window {
 
     protected boolean isClosed() {
         return glfwWindowShouldClose(this.windowId);
+    }
+
+    protected void destroy() {
+        glfwDestroyWindow(this.windowId);
     }
 
 }

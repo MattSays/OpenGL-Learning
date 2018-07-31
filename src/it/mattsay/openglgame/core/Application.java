@@ -1,6 +1,8 @@
 package it.mattsay.openglgame.core;
 
 import it.mattsay.openglgame.core.logging.AppLogger;
+import it.mattsay.openglgame.core.rendering.models.ModelRenderer;
+import it.mattsay.openglgame.core.utils.FPSCounter;
 import org.lwjgl.opengl.GL;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -8,8 +10,10 @@ import static org.lwjgl.glfw.GLFW.*;
 public abstract class Application {
 
     private static boolean APP_EXIT;
-    private AppLogger logger;
+    public static final AppLogger LOGGER = new AppLogger();
+    private FPSCounter counter;
     private Window window;
+    private ModelRenderer renderer;
 
     /**
      * This is the main core of the application
@@ -20,8 +24,21 @@ public abstract class Application {
      */
     public Application(String name, int width, int height) {
         this.window = new Window(name, width, height);
-        this.logger = new AppLogger();
+        this.counter = new FPSCounter();
+        this.renderer = new ModelRenderer();
         APP_EXIT = false;
+    }
+
+    public Window getWindow() {
+        return window;
+    }
+
+    public ModelRenderer getRenderer() {
+        return renderer;
+    }
+
+    protected int getFPS() {
+        return counter.getFPS();
     }
 
     /**
@@ -35,11 +52,11 @@ public abstract class Application {
      * Use this method for starting the application
      */
     public void run() {
-        logger.info("Starting..");
+        LOGGER.info("Starting...");
         this.glInit();
         this.loop();
         this.end();
-        logger.info("Stopping...");
+        LOGGER.info("Stopping...");
     }
 
     /**
@@ -52,13 +69,13 @@ public abstract class Application {
 
         window.init();
 
-        glfwSetErrorCallback((int error, long description) -> logger.openglError(error, description));
+        glfwSetErrorCallback((int error, long description) -> LOGGER.glfwError(error, description));
 
         GL.createCapabilities();
 
         this.init();
 
-        logger.info("Application started (" + this.window.getName() + ", " + this.window.getWidth() + ", " + this.window.getHeight() + ")");
+        LOGGER.info("Application started (" + this.window.getName() + ", " + this.window.getWidth() + ", " + this.window.getHeight() + ")");
     }
 
     /**
@@ -70,6 +87,8 @@ public abstract class Application {
 
             glfwPollEvents();
 
+            this.counter.update();
+
             this.window.swapBuffers();
         }
     }
@@ -78,6 +97,7 @@ public abstract class Application {
      * Used for free all objects previously initialized
      */
     private void end() {
+        this.window.destroy();
         this.dispose();
     }
 
