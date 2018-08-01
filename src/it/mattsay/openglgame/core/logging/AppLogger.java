@@ -2,6 +2,7 @@ package it.mattsay.openglgame.core.logging;
 
 import it.mattsay.openglgame.core.Application;
 import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.opengl.GL11;
 
 import java.io.File;
 import java.io.IOException;
@@ -81,6 +82,14 @@ public class AppLogger {
     }
 
     /**
+     * Check for opengl error
+     */
+    public void checkOpenGLError() {
+        int error = GL11.glGetError();
+        err(Integer.toHexString(error), ErrorType.OPENGL);
+    }
+
+    /**
      * Used for instantly close the application with a message
      *
      * @param message
@@ -116,7 +125,7 @@ public class AppLogger {
     }
 
     public enum ErrorType {
-        GLFW, UNKNOWN, CRASH, OUT_OF_BOUNDS
+        GLFW, UNKNOWN, CRASH, OUT_OF_BOUNDS, OPENGL
     }
 
 }

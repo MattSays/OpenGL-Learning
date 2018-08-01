@@ -7,16 +7,19 @@ public class Game extends Application {
 
 
     float[] vertices = {
-            // Left bottom triangle
-            -0.5f, 0.5f, 0f,
-            -0.5f, -0.5f, 0f,
-            0.5f, -0.5f, 0f,
-            // Right top triangle
-            0.5f, -0.5f, 0f,
-            0.5f, 0.5f, 0f,
-            -0.5f, 0.5f, 0f
+            -0.5f, 0.5f, 0f,//v0
+            -0.5f, -0.5f, 0f,//v1
+            0.5f, -0.5f, 0f,//v2
+            0.5f, 0.5f, 0f,//v3
     };
-    RawModel model;
+
+    int[] indices = {
+            0, 1, 3,//top left triangle (v0, v1, v3)
+            3, 1, 2//bottom right triangle (v3, v1, v2)
+    };
+
+
+    RawModel indicesModel;
 
     /**
      * Just setting some window properties
@@ -31,8 +34,8 @@ public class Game extends Application {
      */
     @Override
     protected void init() {
-        this.model = new RawModel(this.vertices);
-        this.model.init();
+        this.indicesModel = new RawModel(this.vertices, this.indices);
+        this.indicesModel.init();
     }
 
     /**
@@ -45,7 +48,7 @@ public class Game extends Application {
 
         getRenderer().begin();
 
-        getRenderer().render(this.model);
+        getRenderer().render(this.indicesModel);
     }
 
     /**
@@ -53,6 +56,6 @@ public class Game extends Application {
      */
     @Override
     protected void dispose() {
-        this.model.destroy();
+        this.indicesModel.destroy();
     }
 }

@@ -72,6 +72,7 @@ public abstract class Application {
         glfwSetErrorCallback((int error, long description) -> LOGGER.glfwError(error, description));
 
         GL.createCapabilities();
+        //GLUtil.setupDebugMessageCallback(); Use this for debugging
 
         this.init();
 

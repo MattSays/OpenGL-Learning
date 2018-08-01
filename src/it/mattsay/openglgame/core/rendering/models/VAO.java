@@ -8,6 +8,7 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 
 
@@ -29,6 +30,18 @@ public class VAO extends GLObject {
 
 
     /**
+     * Returns the EBO
+     */
+    protected EBO getEBO() {
+        for (VBO v : this.vbos) {
+            if (v instanceof EBO) {
+                return (EBO) v;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Creates the OpenGL Object
      */
     @Override
@@ -44,22 +57,48 @@ public class VAO extends GLObject {
         GL30.glBindVertexArray(getId());
     }
 
-    protected void storeData(float[] data) {
+    /**
+     * Store the vertices data to a vbo
+     *
+     * @param verticesData
+     */
+    protected void storeVerticesData(float[] verticesData) {
         VBO vbo = new VBO();
         vbo.create();
         vbo.bind();
 
-        FloatBuffer dataBuffer = BufferUtils.createFloatBuffer(data.length);
-        dataBuffer.put(data);
+        FloatBuffer dataBuffer = BufferUtils.createFloatBuffer(verticesData.length);
+        dataBuffer.put(verticesData);
         dataBuffer.flip();
 
         vbo.setData(dataBuffer);
 
         this.vbos.add(vbo);
-        GL20.glVertexAttribPointer(this.vbos.indexOf(vbo), 3, GL11.GL_FLOAT, false, 0, 0);
+        GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, 0, 0);
 
         vbo.unbind();
 
+    }
+
+    /**
+     * Store the vertices data to a ebo
+     *
+     * @param indicesData
+     */
+    protected void storeIndicesData(int[] indicesData) {
+        EBO ebo = new EBO();
+        ebo.create();
+        ebo.bind();
+
+        IntBuffer dataBuffer = BufferUtils.createIntBuffer(indicesData.length);
+        dataBuffer.put(indicesData);
+        dataBuffer.flip();
+
+        ebo.setData(dataBuffer);
+
+        this.vbos.add(ebo);
+
+        ebo.unbind();
     }
 
     /**

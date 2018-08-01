@@ -49,6 +49,9 @@ public class Window {
 
     protected void init() {
 
+        glfwDefaultWindowHints();
+        // glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE); Use this for debugging
+        glfwWindowHint(GLFW_OPENGL_CORE_PROFILE, GLFW_TRUE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
         this.windowId = glfwCreateWindow(this.width, this.height, this.name, MemoryUtil.NULL, MemoryUtil.NULL);

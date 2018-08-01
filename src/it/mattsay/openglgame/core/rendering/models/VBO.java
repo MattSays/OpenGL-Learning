@@ -2,6 +2,7 @@ package it.mattsay.openglgame.core.rendering.models;
 
 import org.lwjgl.opengl.GL15;
 
+import java.nio.Buffer;
 import java.nio.FloatBuffer;
 
 public class VBO extends GLObject {
@@ -43,7 +44,7 @@ public class VBO extends GLObject {
      *
      * @param buffer
      */
-    protected void setData(FloatBuffer buffer) {
-        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
+    protected void setData(Buffer buffer) {
+        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, (FloatBuffer) buffer, GL15.GL_STATIC_DRAW);
     }
 }

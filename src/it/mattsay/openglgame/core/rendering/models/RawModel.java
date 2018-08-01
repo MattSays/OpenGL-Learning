@@ -4,12 +4,20 @@ public class RawModel {
 
     private VAO vao;
     private int verticesCount;
-    private float[] positions;
+    private float[] vertices;
+    private int[] indices;
 
-    public RawModel(float[] positions) {
-        this.positions = positions;
+    /**
+     * Creates a model with the given vertex and indices
+     *
+     * @param vertices
+     * @param indices
+     */
+    public RawModel(float[] vertices, int[] indices) {
+        this.vertices = vertices;
         this.vao = new VAO();
-        this.verticesCount = positions.length / 3;
+        this.indices = indices;
+        this.verticesCount = indices.length;
     }
 
     /**
@@ -19,7 +27,8 @@ public class RawModel {
         this.vao.create();
 
         this.vao.bind();
-        this.vao.storeData(this.positions);
+        this.vao.storeVerticesData(this.vertices);
+        this.vao.storeIndicesData(this.indices);
         this.vao.unbind();
     }
 
