@@ -125,7 +125,7 @@ public class AppLogger {
     }
 
     public enum ErrorType {
-        GLFW, UNKNOWN, CRASH, OUT_OF_BOUNDS, OPENGL
+        GLFW, UNKNOWN, CRASH, OUT_OF_BOUNDS, OPENGL, URI_SYNTAX, IO, SHADER_SYNTAX, PROGRAM_LINK, VALIDATE
     }
 
 }

@@ -5,6 +5,7 @@ import it.mattsay.openglgame.core.rendering.models.RawModel;
 
 public class Game extends Application {
 
+    private StaticShader shader;
 
     float[] vertices = {
             -0.5f, 0.5f, 0f,//v0
@@ -34,6 +35,9 @@ public class Game extends Application {
      */
     @Override
     protected void init() {
+        this.shader = new StaticShader();
+        this.shader.create();
+        this.shader.setup();
         this.indicesModel = new RawModel(this.vertices, this.indices);
         this.indicesModel.init();
     }
@@ -48,7 +52,9 @@ public class Game extends Application {
 
         getRenderer().begin();
 
+        this.shader.bind();
         getRenderer().render(this.indicesModel);
+        this.shader.unbind();
     }
 
     /**
