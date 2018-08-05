@@ -1,4 +1,4 @@
-package it.mattsay.openglgame.core.rendering.models;
+package it.mattsay.openglgame.core.rendering.objects;
 
 import org.lwjgl.opengl.GL15;
 

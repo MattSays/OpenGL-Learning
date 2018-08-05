@@ -1,4 +1,4 @@
-package it.mattsay.openglgame.core.rendering.models;
+package it.mattsay.openglgame.core.rendering.objects;
 
 import org.lwjgl.opengl.GL15;
 
@@ -11,7 +11,7 @@ public class EBO extends VBO {
      * Binds the object to use it for OpenGL operations
      */
     @Override
-    protected void bind() {
+    public void bind() {
         GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, this.getId());
     }
 
@@ -19,7 +19,7 @@ public class EBO extends VBO {
      * Unbinds the object
      */
     @Override
-    protected void unbind() {
+    public void unbind() {
         GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 

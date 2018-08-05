@@ -1,5 +1,9 @@
 package it.mattsay.openglgame.core.rendering.models;
 
+import it.mattsay.openglgame.core.Application;
+import it.mattsay.openglgame.core.logging.AppLogger;
+import it.mattsay.openglgame.core.rendering.objects.VAO;
+
 public class RawModel {
 
     private VAO vao;
@@ -24,12 +28,17 @@ public class RawModel {
      * Initializes the model with a vao setup
      */
     public void init() {
+        Application.LOGGER.debug("Creating and setting up VAO", AppLogger.DebugType.VAO);
         this.vao.create();
 
         this.vao.bind();
-        this.vao.storeVerticesData(this.vertices);
+        Application.LOGGER.debug("Storing vertices data", AppLogger.DebugType.VAO);
+        this.vao.storeData(this.vertices, 0, 3);
+        Application.LOGGER.debug("Storing indices data", AppLogger.DebugType.VAO);
         this.vao.storeIndicesData(this.indices);
         this.vao.unbind();
+
+        Application.LOGGER.debug("VAO has been setting up successfully", AppLogger.DebugType.VAO);
     }
 
     protected int getVerticesCount() {
@@ -44,6 +53,7 @@ public class RawModel {
      * Destroys the model
      */
     public void destroy() {
+        Application.LOGGER.debug("Destroying VAO", AppLogger.DebugType.VAO);
         this.vao.destroy();
     }
 

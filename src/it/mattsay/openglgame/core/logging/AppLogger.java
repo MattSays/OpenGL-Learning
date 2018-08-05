@@ -16,6 +16,7 @@ public class AppLogger {
 
     private Path outputName;
     private SimpleDateFormat dateFormat;
+    private boolean debug = false;
 
     /**
      * Creates the log file and if the file count is equal or more than 8 the logger deletes all the log files
@@ -41,6 +42,10 @@ public class AppLogger {
 
     }
 
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+    }
+
     /**
      * Prints the message with the correct log level and appends to the log file
      *
@@ -60,6 +65,12 @@ public class AppLogger {
 
     public void info(String message) {
         this.log(Level.INFO, message);
+    }
+
+    public void debug(String message, DebugType debug) {
+        if (!this.debug) return;
+        if (debug == null) debug = DebugType.UNKNOWN;
+        this.log(Level.DEBUG, "[" + debug.name() + "] " + message);
     }
 
     public void warn(String message) {
@@ -111,7 +122,7 @@ public class AppLogger {
     }
 
     public enum Level {
-        INFO("\033[0m"), ERROR("\033[0;31m"), WARNING("\033[0;33m");
+        INFO("\033[0m"), ERROR("\033[0;31m"), WARNING("\033[0;33m"), DEBUG("\033[0;36m");
 
         private String color;
 
@@ -124,8 +135,12 @@ public class AppLogger {
         }
     }
 
+    public enum DebugType {
+        UNKNOWN, VAO, SHADER, SHADER_PROGRAM, TEXTURE
+    }
+
     public enum ErrorType {
-        GLFW, UNKNOWN, CRASH, OUT_OF_BOUNDS, OPENGL, URI_SYNTAX, IO, SHADER_SYNTAX, PROGRAM_LINK, VALIDATE
+        GLFW, UNKNOWN, CRASH, OUT_OF_BOUNDS, OPENGL, IO, SHADER_SYNTAX, PROGRAM_LINK, PROGRAM_VALIDATE, IMAGE_LOAD
     }
 
 }

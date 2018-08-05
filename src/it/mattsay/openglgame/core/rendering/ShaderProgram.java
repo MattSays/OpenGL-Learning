@@ -2,7 +2,7 @@ package it.mattsay.openglgame.core.rendering;
 
 import it.mattsay.openglgame.core.Application;
 import it.mattsay.openglgame.core.logging.AppLogger;
-import it.mattsay.openglgame.core.rendering.models.GLObject;
+import it.mattsay.openglgame.core.rendering.objects.GLObject;
 import it.mattsay.openglgame.core.utils.ShaderSyntaxException;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
@@ -45,9 +45,11 @@ public abstract class ShaderProgram extends GLObject {
     private int loadShader(String sourcePath, int type) throws IOException, ShaderSyntaxException {
         StringBuilder builder = new StringBuilder();
         Files.readAllLines(new File(sourcePath).toPath()).forEach(line -> builder.append(line + "\n"));
+        Application.LOGGER.debug("Creating shader (" + sourcePath + ")", AppLogger.DebugType.SHADER);
         int id = GL20.glCreateShader(type);
-
+        Application.LOGGER.debug("Attaching shader source", AppLogger.DebugType.SHADER);
         GL20.glShaderSource(id, builder.toString());
+        Application.LOGGER.debug("Compiling shader", AppLogger.DebugType.SHADER);
         GL20.glCompileShader(id);
 
         if (GL20.glGetShaderi(id, GL20.GL_COMPILE_STATUS) == GL11.GL_FALSE) {
@@ -62,29 +64,34 @@ public abstract class ShaderProgram extends GLObject {
      */
     @Override
     public void create() {
+        Application.LOGGER.debug("Creating the program", AppLogger.DebugType.SHADER_PROGRAM);
         this.setId(GL20.glCreateProgram());
+        this.setup();
     }
 
     /**
      * Attaches the shaders to the program
      */
-    public void setup() {
+    private void setup() {
+        Application.LOGGER.debug("Attaching shaders", AppLogger.DebugType.SHADER_PROGRAM);
         GL20.glAttachShader(this.getId(), this.vertexShader);
         GL20.glAttachShader(this.getId(), this.fragmentShader);
 
         this.bindAttributes();
 
+        Application.LOGGER.debug("Linking program", AppLogger.DebugType.SHADER_PROGRAM);
         GL20.glLinkProgram(this.getId());
 
         if (GL20.glGetProgrami(this.getId(), GL20.GL_LINK_STATUS) == GL11.GL_FALSE)
             Application.LOGGER.err(GL20.glGetProgramInfoLog(this.getId(), 500).replace('\n', ' '), AppLogger.ErrorType.PROGRAM_LINK);
 
+        Application.LOGGER.debug("Validating program", AppLogger.DebugType.SHADER_PROGRAM);
         GL20.glValidateProgram(this.getId());
 
         if (GL20.glGetProgrami(this.getId(), GL20.GL_VALIDATE_STATUS) == GL11.GL_FALSE)
-            Application.LOGGER.err(GL20.glGetProgramInfoLog(this.getId(), 500).replace('\n', ' '), AppLogger.ErrorType.VALIDATE);
+            Application.LOGGER.err(GL20.glGetProgramInfoLog(this.getId(), 500).replace('\n', ' '), AppLogger.ErrorType.PROGRAM_VALIDATE);
 
-        Application.LOGGER.info("Shader has been setting up successfully");
+        Application.LOGGER.debug("ShaderProgram has been setting up successfully", AppLogger.DebugType.SHADER_PROGRAM);
     }
 
     /**
@@ -123,6 +130,7 @@ public abstract class ShaderProgram extends GLObject {
      */
     @Override
     public void destroy() {
+        Application.LOGGER.debug("Destroying the program and the shaders", AppLogger.DebugType.SHADER_PROGRAM);
         this.unbind();
 
         GL20.glDetachShader(this.getId(), this.fragmentShader);

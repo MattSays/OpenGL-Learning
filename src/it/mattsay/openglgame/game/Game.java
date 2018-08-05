@@ -1,7 +1,7 @@
 package it.mattsay.openglgame.game;
 
 import it.mattsay.openglgame.core.Application;
-import it.mattsay.openglgame.core.rendering.models.RawModel;
+import it.mattsay.openglgame.core.rendering.models.TexturedModel;
 
 public class Game extends Application {
 
@@ -19,14 +19,22 @@ public class Game extends Application {
             3, 1, 2//bottom right triangle (v3, v1, v2)
     };
 
+    float[] texCords = {
+            0, 0,
+            0, 1,
+            1, 1,
+            1, 0
+    };
 
-    RawModel indicesModel;
+
+    TexturedModel model;
 
     /**
      * Just setting some window properties
      */
     public Game() {
         super("Game", 800, 600);
+        Application.LOGGER.setDebug(true);
     }
 
 
@@ -35,11 +43,11 @@ public class Game extends Application {
      */
     @Override
     protected void init() {
+
         this.shader = new StaticShader();
         this.shader.create();
-        this.shader.setup();
-        this.indicesModel = new RawModel(this.vertices, this.indices);
-        this.indicesModel.init();
+        this.model = new TexturedModel(this.vertices, this.indices, this.texCords, "image.png");
+        this.model.init();
     }
 
     /**
@@ -53,8 +61,10 @@ public class Game extends Application {
         getRenderer().begin();
 
         this.shader.bind();
-        getRenderer().render(this.indicesModel);
+        getRenderer().render(this.model);
         this.shader.unbind();
+
+        getRenderer().end();
     }
 
     /**
@@ -62,6 +72,7 @@ public class Game extends Application {
      */
     @Override
     protected void dispose() {
-        this.indicesModel.destroy();
+        this.model.destroy();
+        this.shader.destroy();
     }
 }

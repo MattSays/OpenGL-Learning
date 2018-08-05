@@ -1,4 +1,4 @@
-package it.mattsay.openglgame.core.rendering.models;
+package it.mattsay.openglgame.core.rendering.objects;
 
 import it.mattsay.openglgame.core.Application;
 import it.mattsay.openglgame.core.logging.AppLogger;
@@ -14,9 +14,11 @@ import java.util.ArrayList;
 
 public class VAO extends GLObject {
 
+    private EBO ebo;
+
     private ArrayList<VBO> vbos;
 
-    protected VAO() {
+    public VAO() {
         this.vbos = new ArrayList<>();
     }
 
@@ -32,20 +34,15 @@ public class VAO extends GLObject {
     /**
      * Returns the EBO
      */
-    protected EBO getEBO() {
-        for (VBO v : this.vbos) {
-            if (v instanceof EBO) {
-                return (EBO) v;
-            }
-        }
-        return null;
+    public EBO getEBO() {
+        return this.ebo;
     }
 
     /**
      * Creates the OpenGL Object
      */
     @Override
-    protected void create() {
+    public void create() {
         setId(GL30.glGenVertexArrays());
     }
 
@@ -53,28 +50,28 @@ public class VAO extends GLObject {
      * Binds the object to use it for OpenGL operations
      */
     @Override
-    protected void bind() {
+    public void bind() {
         GL30.glBindVertexArray(getId());
     }
 
     /**
      * Store the vertices data to a vbo
      *
-     * @param verticesData
+     * @param data
      */
-    protected void storeVerticesData(float[] verticesData) {
+    public void storeData(float[] data, int index, int size) {
         VBO vbo = new VBO();
         vbo.create();
         vbo.bind();
 
-        FloatBuffer dataBuffer = BufferUtils.createFloatBuffer(verticesData.length);
-        dataBuffer.put(verticesData);
+        FloatBuffer dataBuffer = BufferUtils.createFloatBuffer(data.length);
+        dataBuffer.put(data);
         dataBuffer.flip();
 
         vbo.setData(dataBuffer);
 
         this.vbos.add(vbo);
-        GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, 0, 0);
+        GL20.glVertexAttribPointer(index, size, GL11.GL_FLOAT, false, 0, 0);
 
         vbo.unbind();
 
@@ -85,7 +82,7 @@ public class VAO extends GLObject {
      *
      * @param indicesData
      */
-    protected void storeIndicesData(int[] indicesData) {
+    public void storeIndicesData(int[] indicesData) {
         EBO ebo = new EBO();
         ebo.create();
         ebo.bind();
@@ -96,7 +93,7 @@ public class VAO extends GLObject {
 
         ebo.setData(dataBuffer);
 
-        this.vbos.add(ebo);
+        this.ebo = ebo;
 
         ebo.unbind();
     }
@@ -105,7 +102,7 @@ public class VAO extends GLObject {
      * Unbinds the object
      */
     @Override
-    protected void unbind() {
+    public void unbind() {
         GL30.glBindVertexArray(0);
     }
 
@@ -113,13 +110,15 @@ public class VAO extends GLObject {
      * Deletes the object from the memory
      */
     @Override
-    protected void destroy() {
+    public void destroy() {
         GL30.glDeleteVertexArrays(getId());
 
         for (VBO v : this.vbos) {
             v.unbind();
             v.destroy();
         }
+        ebo.unbind();
+        ebo.destroy();
     }
 
     /**
@@ -127,7 +126,7 @@ public class VAO extends GLObject {
      *
      * @param index
      */
-    protected void enableVertexAttribArray(int index) {
+    public void enableVertexAttribArray(int index) {
         if (index < 0 || index > this.vbos.size() - 1) {
             Application.LOGGER.crash(
                     "Out of Bounds index:" + index +
@@ -139,21 +138,14 @@ public class VAO extends GLObject {
         GL20.glEnableVertexAttribArray(index);
     }
 
-    /**
-     * Enables all the VertexAttribArrays
-     */
-    protected void enableAllVertexAttribArrays() {
-        for (VBO vbo : this.vbos) {
-            this.enableVertexAttribArray(this.vbos.indexOf(vbo));
-        }
-    }
+
 
     /**
      * Disables the VertexAttribArray at the given index
      *
      * @param index
      */
-    protected void disableVertexAttribArray(int index) {
+    public void disableVertexAttribArray(int index) {
         if (index < 0 || index > this.vbos.size() - 1) {
             Application.LOGGER.crash(
                     "Out of Bounds index:" + index +
@@ -166,12 +158,5 @@ public class VAO extends GLObject {
         GL20.glDisableVertexAttribArray(index);
     }
 
-    /**
-     * Disables all the VertexAttribArrays
-     */
-    protected void disableAllVertexAttribArrays() {
-        for (VBO vbo : this.vbos) {
-            this.disableVertexAttribArray(this.vbos.indexOf(vbo));
-        }
-    }
+
 }

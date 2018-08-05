@@ -13,5 +13,6 @@ public class StaticShader extends ShaderProgram {
     @Override
     protected void bindAttributes() {
         this.bindAttribute(0, "position");
+        this.bindAttribute(1, "texCords");
     }
 }
