@@ -9,11 +9,14 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public abstract class Application {
 
-    private static boolean APP_EXIT;
     public static final AppLogger LOGGER = new AppLogger();
+    public static final float FOV = 70f, NEAR_PLANE = 0.1f, FAR_PLANE = 1000f;
+
+    private static boolean APP_EXIT;
     private FPSCounter counter;
     private Window window;
     private ModelRenderer renderer;
+
 
     /**
      * This is the main core of the application
@@ -36,6 +39,7 @@ public abstract class Application {
     public ModelRenderer getRenderer() {
         return renderer;
     }
+
 
     protected int getFPS() {
         return counter.getFPS();
@@ -76,7 +80,11 @@ public abstract class Application {
 
         this.init();
 
-        LOGGER.info("Application started (" + this.window.getName() + ", " + this.window.getWidth() + ", " + this.window.getHeight() + ")");
+        this.renderer.init();
+
+        window.show();
+
+        LOGGER.info("Application started (" + this.window.getName() + ", " + Window.getWidth() + ", " + Window.getHeight() + ")");
     }
 
     /**
@@ -99,6 +107,7 @@ public abstract class Application {
      */
     private void end() {
         this.window.destroy();
+        this.renderer.destroy();
         this.dispose();
     }
 

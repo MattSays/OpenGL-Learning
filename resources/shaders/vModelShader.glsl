@@ -6,9 +6,13 @@ in vec3 position; // The VAO vertex
 // out vec3 colour; // Colour Output to Fragment Shader
 out vec2 out_texCords;
 
+uniform mat4 transformationMatrix;
+uniform mat4 projectionMatrix;
+uniform mat4 viewMatrix;
+
 void main() {
 
-    gl_Position = vec4(position, 1.0); // Tells to the gpu the correct vertex position
+    gl_Position = projectionMatrix * viewMatrix * transformationMatrix * vec4(position, 1.0); // Tells to the gpu the correct vertex position
 
     out_texCords = texCords;
 

@@ -1,16 +1,46 @@
 package it.mattsay.openglgame.core.rendering.models;
 
+import it.mattsay.openglgame.core.entities.Camera;
+import it.mattsay.openglgame.core.entities.Entity;
+import it.mattsay.openglgame.core.rendering.shaders.ModelShader;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 
 public class ModelRenderer {
 
+    private ModelShader shader;
+    private Camera camera;
+
+
+    public void init() {
+        this.shader = new ModelShader();
+        this.shader.create();
+
+        this.shader.bind();
+        this.shader.setCameraMatrix();
+        this.shader.setProjectionMatrix();
+        this.shader.unbind();
+    }
+
+    public Camera getCamera() {
+        return camera;
+    }
+
+    public void setCamera(Camera camera) {
+        this.camera = camera;
+    }
+
     /**
      * Setups the OpenGL scene
      */
     public void begin() {
-        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
+        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
         GL11.glClearColor(0, 1, 0, 1);
+        this.shader.bind();
+        if (camera != null) {
+            this.shader.setCameraMatrix(this.getCamera());
+        }
 
     }
 
@@ -58,8 +88,23 @@ public class ModelRenderer {
 
     }
 
-    public void end() {
+    /**
+     * Renders the given entity with its position, rotation and scale
+     *
+     * @param entity
+     */
+    public void render(Entity entity) {
+        this.shader.setEntityMatrix(entity.getPosition(), entity.getRotation(), entity.getScale());
+        this.render(entity.getModel());
 
+    }
+
+    public void end() {
+        this.shader.unbind();
+    }
+
+    public void destroy() {
+        this.shader.destroy();
     }
 
 }

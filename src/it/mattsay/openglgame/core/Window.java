@@ -1,6 +1,9 @@
 package it.mattsay.openglgame.core;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.system.MemoryUtil;
+
+import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -9,7 +12,7 @@ public class Window {
     /**
      * The id that identifies the window for OpenGL operations
      */
-    private long windowId;
+    private static long windowId;
 
     /**
      * Window's properties
@@ -35,47 +38,60 @@ public class Window {
         return name;
     }
 
-    public void setName(String name) {
-        glfwSetWindowTitle(this.windowId, name);
+    public static int getWidth() {
+        IntBuffer buffer = BufferUtils.createIntBuffer(1);
+        glfwGetWindowSize(windowId, buffer, null);
+        return buffer.get(0);
     }
 
-    public int getWidth() {
+    public static int getHeight() {
+        IntBuffer buffer = BufferUtils.createIntBuffer(1);
+        glfwGetWindowSize(windowId, null, buffer);
+        return buffer.get(0);
+    }
+
+    public void setName(String name) {
+        glfwSetWindowTitle(windowId, name);
+    }
+
+    public int getInitialWidth() {
         return width;
     }
 
-    public int getHeight() {
+    public int getInitiaHeight() {
         return height;
     }
 
     protected void init() {
 
         glfwDefaultWindowHints();
-        // glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE); Use this for debugging
         glfwWindowHint(GLFW_OPENGL_CORE_PROFILE, GLFW_TRUE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-        this.windowId = glfwCreateWindow(this.width, this.height, this.name, MemoryUtil.NULL, MemoryUtil.NULL);
+        windowId = glfwCreateWindow(this.width, this.height, this.name, MemoryUtil.NULL, MemoryUtil.NULL);
 
-        if (this.windowId == MemoryUtil.NULL)
+        if (windowId == MemoryUtil.NULL)
             throw new RuntimeException("Can't create the window");
 
-        glfwMakeContextCurrent(this.windowId);
+        glfwMakeContextCurrent(windowId);
 
         glfwSwapInterval(0);
+    }
 
-        glfwShowWindow(this.windowId);
+    protected void show() {
+        glfwShowWindow(windowId);
     }
 
     protected void swapBuffers() {
-        glfwSwapBuffers(this.windowId);
+        glfwSwapBuffers(windowId);
     }
 
     protected boolean isClosed() {
-        return glfwWindowShouldClose(this.windowId);
+        return glfwWindowShouldClose(windowId);
     }
 
     protected void destroy() {
-        glfwDestroyWindow(this.windowId);
+        glfwDestroyWindow(windowId);
     }
 
 }

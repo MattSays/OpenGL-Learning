@@ -1,20 +1,28 @@
-package it.mattsay.openglgame.core.rendering;
+package it.mattsay.openglgame.core.rendering.shaders;
 
 import it.mattsay.openglgame.core.Application;
 import it.mattsay.openglgame.core.logging.AppLogger;
 import it.mattsay.openglgame.core.rendering.objects.GLObject;
 import it.mattsay.openglgame.core.utils.ShaderSyntaxException;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.FloatBuffer;
 import java.nio.file.Files;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class ShaderProgram extends GLObject {
 
     private int vertexShader;
     private int fragmentShader;
+    private Map<String, Integer> uniforms;
+    private FloatBuffer matrixBuffer;
 
     /**
      * Loads the vertex shader and the fragment shader
@@ -23,6 +31,8 @@ public abstract class ShaderProgram extends GLObject {
      * @param fragment
      */
     public ShaderProgram(String vertex, String fragment) {
+        this.matrixBuffer = BufferUtils.createFloatBuffer(16);
+        this.uniforms = new HashMap<String, Integer>();
         try {
             this.vertexShader = loadShader("resources/shaders/" + vertex + ".glsl", GL20.GL_VERTEX_SHADER);
             this.fragmentShader = loadShader("resources/shaders/" + fragment + ".glsl", GL20.GL_FRAGMENT_SHADER);
@@ -69,6 +79,7 @@ public abstract class ShaderProgram extends GLObject {
         this.setup();
     }
 
+
     /**
      * Attaches the shaders to the program
      */
@@ -77,6 +88,7 @@ public abstract class ShaderProgram extends GLObject {
         GL20.glAttachShader(this.getId(), this.vertexShader);
         GL20.glAttachShader(this.getId(), this.fragmentShader);
 
+        Application.LOGGER.debug("Binding attributes", AppLogger.DebugType.SHADER_PROGRAM);
         this.bindAttributes();
 
         Application.LOGGER.debug("Linking program", AppLogger.DebugType.SHADER_PROGRAM);
@@ -91,6 +103,9 @@ public abstract class ShaderProgram extends GLObject {
         if (GL20.glGetProgrami(this.getId(), GL20.GL_VALIDATE_STATUS) == GL11.GL_FALSE)
             Application.LOGGER.err(GL20.glGetProgramInfoLog(this.getId(), 500).replace('\n', ' '), AppLogger.ErrorType.PROGRAM_VALIDATE);
 
+        Application.LOGGER.debug("Loading the uniforms", AppLogger.DebugType.SHADER_PROGRAM);
+        this.setAllUniformLocations();
+
         Application.LOGGER.debug("ShaderProgram has been setting up successfully", AppLogger.DebugType.SHADER_PROGRAM);
     }
 
@@ -98,6 +113,11 @@ public abstract class ShaderProgram extends GLObject {
      * Binds all the attributes
      */
     protected abstract void bindAttributes();
+
+    /**
+     * Gets all the uniform locations
+     */
+    protected abstract void setAllUniformLocations();
 
     /**
      * Binds the attribute
@@ -108,6 +128,53 @@ public abstract class ShaderProgram extends GLObject {
     protected void bindAttribute(int attribute, String name) {
         GL20.glBindAttribLocation(this.getId(), attribute, name);
     }
+
+    private int getUnifrom(String name) {
+        if (this.uniforms.containsKey(name)) {
+            return this.uniforms.get(name);
+        }
+        return -1;
+    }
+
+    protected void setUniformLocation(String name) {
+        this.uniforms.put(name, GL20.glGetUniformLocation(this.getId(), name));
+    }
+
+    public void setUniform(String name, float value) {
+        if (getUnifrom(name) != -1) {
+            GL20.glUniform1f(this.uniforms.get(name), value);
+            return;
+        }
+        Application.LOGGER.err("Uniform not found", AppLogger.ErrorType.UNIFORM_NOT_FOUND);
+    }
+
+    public void setUniform(String name, Vector3f vector) {
+        if (getUnifrom(name) != -1) {
+            GL20.glUniform3f(this.uniforms.get(name), vector.x, vector.y, vector.z);
+            return;
+        }
+        Application.LOGGER.err("Uniform not found", AppLogger.ErrorType.UNIFORM_NOT_FOUND);
+
+    }
+
+    public void setUniform(String name, boolean value) {
+        if (getUnifrom(name) != -1) {
+            GL20.glUniform1f(this.uniforms.get(name), value ? 1 : 0);
+            return;
+        }
+        Application.LOGGER.err("Uniform not found", AppLogger.ErrorType.UNIFORM_NOT_FOUND);
+    }
+
+    public void setUniform(String name, Matrix4f matrix) {
+        if (getUnifrom(name) != -1) {
+            matrix.get(matrixBuffer);
+            GL20.glUniformMatrix4fv(this.uniforms.get(name), false, matrixBuffer);
+            return;
+        }
+        Application.LOGGER.err("Uniform not found", AppLogger.ErrorType.UNIFORM_NOT_FOUND);
+    }
+
+
 
     /**
      * Binds the object to use it for OpenGL operations

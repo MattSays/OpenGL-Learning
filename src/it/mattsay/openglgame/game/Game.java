@@ -1,33 +1,94 @@
 package it.mattsay.openglgame.game;
 
 import it.mattsay.openglgame.core.Application;
+import it.mattsay.openglgame.core.entities.Camera;
+import it.mattsay.openglgame.core.entities.Entity;
 import it.mattsay.openglgame.core.rendering.models.TexturedModel;
+import org.joml.Vector3f;
 
 public class Game extends Application {
 
-    private StaticShader shader;
-
     float[] vertices = {
-            -0.5f, 0.5f, 0f,//v0
-            -0.5f, -0.5f, 0f,//v1
-            0.5f, -0.5f, 0f,//v2
-            0.5f, 0.5f, 0f,//v3
+            -0.5f, 0.5f, -0.5f,
+            -0.5f, -0.5f, -0.5f,
+            0.5f, -0.5f, -0.5f,
+            0.5f, 0.5f, -0.5f,
+
+            -0.5f, 0.5f, 0.5f,
+            -0.5f, -0.5f, 0.5f,
+            0.5f, -0.5f, 0.5f,
+            0.5f, 0.5f, 0.5f,
+
+            0.5f, 0.5f, -0.5f,
+            0.5f, -0.5f, -0.5f,
+            0.5f, -0.5f, 0.5f,
+            0.5f, 0.5f, 0.5f,
+
+            -0.5f, 0.5f, -0.5f,
+            -0.5f, -0.5f, -0.5f,
+            -0.5f, -0.5f, 0.5f,
+            -0.5f, 0.5f, 0.5f,
+
+            -0.5f, 0.5f, 0.5f,
+            -0.5f, 0.5f, -0.5f,
+            0.5f, 0.5f, -0.5f,
+            0.5f, 0.5f, 0.5f,
+
+            -0.5f, -0.5f, 0.5f,
+            -0.5f, -0.5f, -0.5f,
+            0.5f, -0.5f, -0.5f,
+            0.5f, -0.5f, 0.5f
+
     };
 
-    int[] indices = {
-            0, 1, 3,//top left triangle (v0, v1, v3)
-            3, 1, 2//bottom right triangle (v3, v1, v2)
-    };
-
-    float[] texCords = {
+    float[] textureCoords = {
+            0, 0,
+            0, 1,
+            1, 1,
+            1, 0,
+            0, 0,
+            0, 1,
+            1, 1,
+            1, 0,
+            0, 0,
+            0, 1,
+            1, 1,
+            1, 0,
+            0, 0,
+            0, 1,
+            1, 1,
+            1, 0,
+            0, 0,
+            0, 1,
+            1, 1,
+            1, 0,
             0, 0,
             0, 1,
             1, 1,
             1, 0
+
+
     };
 
+    int[] indices = {
+            0, 1, 3,
+            3, 1, 2,
+            4, 5, 7,
+            7, 5, 6,
+            8, 9, 11,
+            11, 9, 10,
+            12, 13, 15,
+            15, 13, 14,
+            16, 17, 19,
+            19, 17, 18,
+            20, 21, 23,
+            23, 21, 22
 
-    TexturedModel model;
+    };
+
+    private Entity entity;
+
+    private Camera camera;
 
     /**
      * Just setting some window properties
@@ -43,11 +104,12 @@ public class Game extends Application {
      */
     @Override
     protected void init() {
+        this.camera = new Camera();
+        this.getRenderer().setCamera(camera);
+        this.entity = new Entity(new TexturedModel(vertices, indices, textureCoords, "image_inverted.png"), new Vector3f(0f, 0f, -0.7f));
+        this.entity.init();
+        this.entity.scale(-0.7f);
 
-        this.shader = new StaticShader();
-        this.shader.create();
-        this.model = new TexturedModel(this.vertices, this.indices, this.texCords, "image.png");
-        this.model.init();
     }
 
     /**
@@ -55,15 +117,13 @@ public class Game extends Application {
      */
     @Override
     protected void render() {
-
         this.getWindow().setName("Game - " + this.getFPS());
+        //this.camera.translate(-0.001f, 0f ,0f);
+        this.entity.rotate(0.1f, 0.1f, 0.1f);
+
 
         getRenderer().begin();
-
-        this.shader.bind();
-        getRenderer().render(this.model);
-        this.shader.unbind();
-
+        getRenderer().render(this.entity);
         getRenderer().end();
     }
 
@@ -72,7 +132,6 @@ public class Game extends Application {
      */
     @Override
     protected void dispose() {
-        this.model.destroy();
-        this.shader.destroy();
+        this.entity.destroy();
     }
 }

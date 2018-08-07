@@ -1,4 +1,4 @@
 # OpenGL-Learning
-Used for learning opengl
+I created this project for learning opengl
 
-Thanks to @thethinmatrix for his tutorials :)
+Thanks to @thethinmatrix for your tutorials :)
