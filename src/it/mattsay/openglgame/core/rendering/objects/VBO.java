@@ -5,7 +5,7 @@ import org.lwjgl.opengl.GL15;
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
 
-public class VBO extends GLObject {
+public class VBO extends GLBufferObject {
 
     /**
      * Creates the OpenGL Object

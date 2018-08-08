@@ -1,9 +1,9 @@
 package it.mattsay.openglgame.core;
 
 import it.mattsay.openglgame.core.logging.AppLogger;
-import it.mattsay.openglgame.core.rendering.models.ModelRenderer;
 import it.mattsay.openglgame.core.utils.FPSCounter;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GL11;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -15,7 +15,6 @@ public abstract class Application {
     private static boolean APP_EXIT;
     private FPSCounter counter;
     private Window window;
-    private ModelRenderer renderer;
 
 
     /**
@@ -28,18 +27,12 @@ public abstract class Application {
     public Application(String name, int width, int height) {
         this.window = new Window(name, width, height);
         this.counter = new FPSCounter();
-        this.renderer = new ModelRenderer();
         APP_EXIT = false;
     }
 
     public Window getWindow() {
         return window;
     }
-
-    public ModelRenderer getRenderer() {
-        return renderer;
-    }
-
 
     protected int getFPS() {
         return counter.getFPS();
@@ -78,9 +71,9 @@ public abstract class Application {
         GL.createCapabilities();
         //GLUtil.setupDebugMessageCallback(); Use this for debugging
 
-        this.init();
+        GL11.glViewport(0, 0, Window.getWidth(), Window.getHeight());
 
-        this.renderer.init();
+        this.init();
 
         window.show();
 
@@ -107,7 +100,6 @@ public abstract class Application {
      */
     private void end() {
         this.window.destroy();
-        this.renderer.destroy();
         this.dispose();
     }
 

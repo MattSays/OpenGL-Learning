@@ -2,8 +2,7 @@ package it.mattsay.openglgame.core.rendering.shaders;
 
 import it.mattsay.openglgame.core.Application;
 import it.mattsay.openglgame.core.logging.AppLogger;
-import it.mattsay.openglgame.core.rendering.objects.GLObject;
-import it.mattsay.openglgame.core.utils.ShaderSyntaxException;
+import it.mattsay.openglgame.core.rendering.objects.GLBufferObject;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
@@ -17,7 +16,7 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class ShaderProgram extends GLObject {
+public abstract class ShaderProgram extends GLBufferObject {
 
     private int vertexShader;
     private int fragmentShader;

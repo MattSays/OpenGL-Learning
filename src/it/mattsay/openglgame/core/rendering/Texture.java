@@ -3,7 +3,7 @@ package it.mattsay.openglgame.core.rendering;
 
 import it.mattsay.openglgame.core.Application;
 import it.mattsay.openglgame.core.logging.AppLogger;
-import it.mattsay.openglgame.core.rendering.objects.GLObject;
+import it.mattsay.openglgame.core.rendering.objects.GLBufferObject;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -12,7 +12,7 @@ import org.lwjgl.stb.STBImage;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
-public class Texture extends GLObject {
+public class Texture extends GLBufferObject {
 
     private int width, height;
     private ByteBuffer image;

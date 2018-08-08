@@ -41,11 +41,11 @@ public class RawModel {
         Application.LOGGER.debug("VAO has been setting up successfully", AppLogger.DebugType.VAO);
     }
 
-    protected int getVerticesCount() {
+    public int getVerticesCount() {
         return this.verticesCount;
     }
 
-    protected VAO getVAO() {
+    public VAO getVAO() {
         return this.vao;
     }
 

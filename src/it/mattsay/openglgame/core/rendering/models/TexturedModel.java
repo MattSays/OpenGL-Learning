@@ -1,11 +1,8 @@
 package it.mattsay.openglgame.core.rendering.models;
 
-import it.mattsay.openglgame.core.rendering.Texture;
-
 public class TexturedModel extends RawModel {
 
     private float[] textureCordinates;
-    private Texture texture;
 
 
     /**
@@ -15,14 +12,9 @@ public class TexturedModel extends RawModel {
      * @param indices
      * @param textureCordinates
      */
-    public TexturedModel(float[] vertices, int[] indices, float[] textureCordinates, String texturePath) {
+    public TexturedModel(float[] vertices, int[] indices, float[] textureCordinates) {
         super(vertices, indices);
         this.textureCordinates = textureCordinates;
-        this.texture = new Texture(texturePath);
-    }
-
-    public Texture getTexture() {
-        return texture;
     }
 
     /**
@@ -35,8 +27,6 @@ public class TexturedModel extends RawModel {
         this.getVAO().bind();
         this.getVAO().storeData(this.textureCordinates, 1, 2);
         this.getVAO().unbind();
-
-        this.texture.create();
     }
 
     /**
@@ -45,6 +35,5 @@ public class TexturedModel extends RawModel {
     @Override
     public void destroy() {
         super.destroy();
-        this.texture.destroy();
     }
 }

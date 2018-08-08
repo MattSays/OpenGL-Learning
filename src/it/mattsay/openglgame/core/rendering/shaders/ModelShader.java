@@ -1,9 +1,9 @@
 package it.mattsay.openglgame.core.rendering.shaders;
 
-import it.mattsay.openglgame.core.Application;
 import it.mattsay.openglgame.core.Window;
-import it.mattsay.openglgame.core.entities.Camera;
+import it.mattsay.openglgame.core.rendering.Camera;
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 public class ModelShader extends ShaderProgram {
@@ -25,41 +25,21 @@ public class ModelShader extends ShaderProgram {
      */
     @Override
     protected void setAllUniformLocations() {
-        this.setUniformLocation("projectionMatrix");
-        this.setUniformLocation("transformationMatrix");
-        this.setUniformLocation("viewMatrix");
+        this.setUniformLocation("modelMatrix");
+        this.setUniformLocation("cameraMatrix");
     }
 
     /**
-     * Sets the projection matrix
-     */
-    public void setProjectionMatrix() {
-        float aspectRatio = (float) Window.getWidth() / (float) Window.getHeight();
-        float yScale = (float) ((1f / Math.tan(Math.toRadians(Application.FOV / 2f) * aspectRatio)));
-        float xScale = yScale / aspectRatio;
-        float frustumLenght = Application.FAR_PLANE - Application.NEAR_PLANE;
-
-        Matrix4f projectionMatrix = new Matrix4f();
-        projectionMatrix.m00(xScale);
-        projectionMatrix.m11(yScale);
-        projectionMatrix.m22(-((Application.FAR_PLANE + Application.NEAR_PLANE) / frustumLenght));
-        projectionMatrix.m23(-1);
-        projectionMatrix.m32(-((2 * Application.NEAR_PLANE * Application.FAR_PLANE) / frustumLenght));
-        projectionMatrix.m33(0);
-        this.setUniform("projectionMatrix", projectionMatrix);
-    }
-
-    /**
-     * Sets the camera view matrix
+     * Sets the camera matrix
      *
      * @param camera
      */
     public void setCameraMatrix(Camera camera) {
         Matrix4f matrix = new Matrix4f();
         matrix.identity();
-        matrix.translate(-camera.getPosition().x, -camera.getPosition().y, -camera.getPosition().z);
-        matrix.setRotationXYZ((float) Math.toRadians(camera.getRotation().x), (float) Math.toRadians(camera.getRotation().y), (float) Math.toRadians(camera.getRotation().z));
-        this.setUniform("viewMatrix", matrix);
+        matrix.translate(-camera.getPosition().x, -camera.getPosition().y, 0f);
+        matrix.setRotationXYZ((float) Math.toRadians(camera.getRotation().x), (float) Math.toRadians(camera.getRotation().y), (float) Math.toRadians(0f));
+        this.setUniform("cameraMatrix", matrix);
     }
 
     /**
@@ -68,8 +48,9 @@ public class ModelShader extends ShaderProgram {
     public void setCameraMatrix() {
         Matrix4f matrix = new Matrix4f();
         matrix.identity();
+        matrix.ortho2D(-Window.getWidth() / 2, Window.getWidth() / 2, -Window.getHeight() / 2, Window.getHeight() / 2);
         matrix.translate(0f, 0f, 0f);
-        this.setUniform("viewMatrix", matrix);
+        this.setUniform("cameraMatrix", matrix);
     }
 
     /**
@@ -79,14 +60,14 @@ public class ModelShader extends ShaderProgram {
      * @param rotation
      * @param scale
      */
-    public void setEntityMatrix(Vector3f position, Vector3f rotation, float scale) {
+    public void setEntityMatrix(Vector2f position, Vector2f rotation, Vector2f scale) {
         Matrix4f matrix = new Matrix4f();
         matrix.identity();
-        if (position != null) matrix.setTranslation(position);
+        if (position != null) matrix.setTranslation(position.x, position.y, 0f);
         if (rotation != null)
-            matrix.setRotationXYZ((float) Math.toRadians(rotation.x), (float) Math.toRadians(rotation.y), (float) Math.toRadians(rotation.z));
-        matrix.scale(scale);
-        this.setUniform("transformationMatrix", matrix);
+            matrix.setRotationXYZ((float) Math.toRadians(rotation.x), (float) Math.toRadians(rotation.y), (float) Math.toRadians(0f));
+        matrix.scale(new Vector3f(scale.x / Window.getWidth(), scale.y / Window.getHeight(), 0f));
+        this.setUniform("modelMatrix", matrix);
     }
 
 }

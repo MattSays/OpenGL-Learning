@@ -1,6 +1,6 @@
 package it.mattsay.openglgame.core.rendering.objects;
 
-public abstract class GLObject {
+public abstract class GLBufferObject {
 
     private int id;
 

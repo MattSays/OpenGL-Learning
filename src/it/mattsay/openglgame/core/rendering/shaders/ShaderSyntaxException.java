@@ -1,4 +1,4 @@
-package it.mattsay.openglgame.core.utils;
+package it.mattsay.openglgame.core.rendering.shaders;
 
 public class ShaderSyntaxException extends Exception {
 

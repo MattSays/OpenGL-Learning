@@ -12,7 +12,7 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 
 
-public class VAO extends GLObject {
+public class VAO extends GLBufferObject {
 
     private EBO ebo;
 

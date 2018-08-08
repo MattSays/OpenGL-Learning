@@ -56,8 +56,7 @@ public class AppLogger {
         String log = "[" + getCurrentTime("MM/dd/yyyy - HH:mm:ss") + "] " + "{" + level.name() + "} " + message;
         System.out.println(level.getColor() + log + "\033[0m");
         try {
-            log += "\n";
-            Files.write(this.outputName, log.getBytes(), StandardOpenOption.APPEND);
+            Files.write(this.outputName, (log + System.lineSeparator()).getBytes(), StandardOpenOption.APPEND);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -73,6 +72,12 @@ public class AppLogger {
         this.log(Level.DEBUG, "[" + debug.name() + "] " + message);
     }
 
+    public void debug(String message, String debug) {
+        if (!this.debug) return;
+        if (debug == null) debug = DebugType.UNKNOWN.name();
+        this.log(Level.DEBUG, "[" + debug.toUpperCase() + "] " + message);
+    }
+
     public void warn(String message) {
         this.log(Level.WARNING, message);
     }
@@ -80,6 +85,11 @@ public class AppLogger {
     public void err(String message, ErrorType error) {
         if (error == null) error = ErrorType.UNKNOWN;
         this.log(Level.ERROR, "[" + error.name() + "] " + message);
+    }
+
+    public void err(String message, String error) {
+        if (error == null) error = ErrorType.UNKNOWN.name();
+        this.log(Level.ERROR, "[" + error.toUpperCase() + "] " + message);
     }
 
     /**
@@ -110,6 +120,11 @@ public class AppLogger {
         Application.exit();
     }
 
+    public void crash(String message, String type) {
+        this.err(message, type);
+        Application.exit();
+    }
+
     /**
      * Gets the current time from the format
      *
@@ -136,7 +151,7 @@ public class AppLogger {
     }
 
     public enum DebugType {
-        UNKNOWN, VAO, SHADER, SHADER_PROGRAM, TEXTURE
+        UNKNOWN, WINDOW, VAO, SHADER, SHADER_PROGRAM, TEXTURE
     }
 
     public enum ErrorType {

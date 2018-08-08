@@ -1,9 +1,8 @@
 package it.mattsay.openglgame.core;
 
-import org.lwjgl.BufferUtils;
+import it.mattsay.openglgame.core.logging.AppLogger;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.MemoryUtil;
-
-import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -18,8 +17,8 @@ public class Window {
      * Window's properties
      */
     private String name;
-    private int width;
-    private int height;
+    private static int width;
+    private static int height;
 
     /**
      * Initializes the window with some arguments
@@ -30,8 +29,8 @@ public class Window {
      */
     protected Window(String name, int width, int height) {
         this.name = name;
-        this.width = width;
-        this.height = height;
+        Window.width = width;
+        Window.height = height;
     }
 
     public String getName() {
@@ -39,15 +38,11 @@ public class Window {
     }
 
     public static int getWidth() {
-        IntBuffer buffer = BufferUtils.createIntBuffer(1);
-        glfwGetWindowSize(windowId, buffer, null);
-        return buffer.get(0);
+        return width;
     }
 
     public static int getHeight() {
-        IntBuffer buffer = BufferUtils.createIntBuffer(1);
-        glfwGetWindowSize(windowId, null, buffer);
-        return buffer.get(0);
+        return height;
     }
 
     public void setName(String name) {
@@ -62,31 +57,47 @@ public class Window {
         return height;
     }
 
-    protected void init() {
+    private static void sizeCallback(long window, int width, int height) {
+        Window.width = width;
+        Window.height = height;
+        GL11.glViewport(0, 0, width, height);
+        Application.LOGGER.debug("Window size change to " + width + "," + height, AppLogger.DebugType.WINDOW);
+    }
+
+    /**
+     * Initializes the window
+     */
+    public void init() {
 
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_OPENGL_CORE_PROFILE, GLFW_TRUE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-        windowId = glfwCreateWindow(this.width, this.height, this.name, MemoryUtil.NULL, MemoryUtil.NULL);
+        windowId = glfwCreateWindow(width, height, this.name, MemoryUtil.NULL, MemoryUtil.NULL);
 
         if (windowId == MemoryUtil.NULL)
             throw new RuntimeException("Can't create the window");
+
+        glfwSetWindowSizeCallback(windowId, Window::sizeCallback);
+        glfwSetKeyCallback(windowId, Input::keyboardCallback);
+        glfwSetMouseButtonCallback(windowId, Input::mouseButtonsCallback);
+        glfwSetCursorPosCallback(windowId, Input::mousePosCallback);
+        glfwSetScrollCallback(windowId, Input::mouseScrollCallback);
 
         glfwMakeContextCurrent(windowId);
 
         glfwSwapInterval(0);
     }
 
-    protected void show() {
+    public void show() {
         glfwShowWindow(windowId);
     }
 
-    protected void swapBuffers() {
+    void swapBuffers() {
         glfwSwapBuffers(windowId);
     }
 
-    protected boolean isClosed() {
+    public boolean isClosed() {
         return glfwWindowShouldClose(windowId);
     }
 
